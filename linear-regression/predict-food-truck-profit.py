@@ -120,7 +120,7 @@ def plot(X, Y, T, J_history):
     axis[1].plot(range(J_history.shape[0]), J_history, 'r-')
     axis[1].set_title('Cost Change in Each Iteration')
     axis[1].set_xlabel('Iters.')
-    axis[1].set_ylabel('Cost')
+    axis[1].set_ylabebl('Cost')
 
     pyplot.show()
 
