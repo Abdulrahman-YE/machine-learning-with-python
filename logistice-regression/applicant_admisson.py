@@ -50,9 +50,7 @@ def plot_data(X, y):
     #Plot the data
     plt.plot(X[positive,0], X[positive, 1], 'k*', mfc='b', mec='k', mew=1, lw=2, ms=10)
     plt.plot(X[negative,0], X[negative, 1], 'ko', mfc='y', mec='k', mew=1, ms=8)
-    plt.xlabel('Exam 1 score')
-    plt.ylabel('Exam 2 score')
-    plt.legend(['Admitted', 'Not Admitted'])
+    
     
 
 
@@ -287,6 +285,8 @@ def main():
     #PLOT the decision boundary
     #============================
     utils.plot_decision_boundary(plot_data, theta, X, y)
+    plt.xlabel('Exam 1 score')
+    plt.ylabel('Exam 2 score')
     plt.show()
 
     #PREDICT
@@ -306,4 +306,5 @@ def main():
 
 
 
-main()
+if __name__ == "__main__":
+   main()
