@@ -106,7 +106,7 @@ def design_matrix(X):
     X_design = np.hstack((X0, X))
     return X_design
 
-def slope(X, theta):
+def slope(theta, X):
     """
     Compute -1 * (X(m x n+1) . Theta(n+1 x 1))
 
@@ -165,7 +165,7 @@ def costFunction(theta, X, y):
     J = 0
     grad = np.zeros(theta.shape)
     # 1 / (1 + e ^ (X . Theta))
-    h = sigmoid(slope(X, theta))
+    h = sigmoid(slope(theta, X))
     #1 - y
     u = 1 - y
     # 1 - h(x)
@@ -188,6 +188,44 @@ def costFunction(theta, X, y):
     #(1/m) * ( h(x) - y ) * x
     grad = grad / m
     return J, grad
+
+def predict(theta, X):
+    """
+    Predict whether the label is 0 or 1 using learned logistic regression.
+    Computes the predictions for X using a threshold at 0.5 
+    (i.e., if sigmoid(theta.T*x) >= 0.5, predict 1)
+    
+    Parameters
+    ----------
+    theta : array_like
+        Parameters for logistic regression. A vecotor of shape (n+1, ).
+    
+    X : array_like
+        The data to use for computing predictions. The rows is the number 
+        of points to compute predictions, and columns is the number of
+        features.
+
+    Returns
+    -------
+    p : array_like
+        Predictions and 0 or 1 for each row in X. 
+    
+    Instructions
+    ------------
+    Complete the following code to make predictions using your learned 
+    logistic regression parameters.You should set p to a vector of 0's and 1's    
+    """
+    m = X.shape[0] # Number of training examples
+
+    p = np.zeros(m)
+
+    p = slope(theta, X)
+    p = sigmoid(p)
+    p[p >= 0.5] = 1
+    p[p < 0.5] = 0
+
+    return p
+
 def main():
     X, y = read_data(os.path.join('data', 'ex2data1.txt'))
     #Plot the data
@@ -222,6 +260,7 @@ def main():
     print('\t[{:.3f}, {:.3f}, {:.3f}]'.format(*grad))
     print('Expected gradients (approx):\n\t[0.043, 2.566, 2.647]')
 
+    #OPTIMIZE
     #============================================================
     #Now we'll use optimize.minimize instead of writting gradiant descent function
     #options that we'll pass to the minimize fucntion 
@@ -244,9 +283,25 @@ def main():
     print('Optimized theta returned by optimize.minimize =\n\t [{:.2f}, {:.2f}, {:.2f}]'.format(*theta))
     print('Expected theta (approx):\n\t[-25.161, 0.206, 0.201]')
 
-    #Plot the decision boundary
+
+    #PLOT the decision boundary
+    #============================
     utils.plot_decision_boundary(plot_data, theta, X, y)
     plt.show()
+
+    #PREDICT
+    #==========================================
+    #  Predict probability for a student with score 45 on exam 1 
+    #  and score 85 on exam 2 
+    prob = sigmoid(slope(theta, [1, 45, 85]))
+    print('For a student with scores 45 and 85,'
+        'we predict an admission probability of {:.3f}'.format(prob))
+    print('Expected value: 0.775 +/- 0.002\n')
+
+    # Compute accuracy on our training set
+    p = predict(theta, X)
+    print('Train Accuracy: {:.2f} %'.format(np.mean(p == y) * 100))
+    print('Expected accuracy (approx): 89.00 %')
 
 
 
