@@ -1,8 +1,8 @@
+import os
 from matplotlib import pyplot as plt
 import numpy as np
-import scipy
-import os
-
+from scipy import optimize
+import utils
 #Part of Pr. Andrew Ng course Machine Leaning in coursera
 #Week 3, Exercise 2
 #In this script we will implement logistic regression to whether a student gets admitted into a university
@@ -50,6 +50,10 @@ def plot_data(X, y):
     #Plot the data
     plt.plot(X[positive,0], X[positive, 1], 'k*', mfc='b', mec='k', mew=1, lw=2, ms=10)
     plt.plot(X[negative,0], X[negative, 1], 'ko', mfc='y', mec='k', mew=1, ms=8)
+    plt.xlabel('Exam 1 score')
+    plt.ylabel('Exam 2 score')
+    plt.legend(['Admitted', 'Not Admitted'])
+    
 
 
 
@@ -187,11 +191,7 @@ def costFunction(theta, X, y):
 def main():
     X, y = read_data(os.path.join('data', 'ex2data1.txt'))
     #Plot the data
-    plot_data(X, y)
-    plt.xlabel('Exam 1 score')
-    plt.ylabel('Exam 2 score')
-    plt.legend(['Admitted', 'Not Admitted'])
-    #plt.show()
+
 
     # Test the implementation of sigmoid function here
     z = 0
@@ -221,4 +221,34 @@ def main():
     print('Gradient at test theta:')
     print('\t[{:.3f}, {:.3f}, {:.3f}]'.format(*grad))
     print('Expected gradients (approx):\n\t[0.043, 2.566, 2.647]')
+
+    #============================================================
+    #Now we'll use optimize.minimize instead of writting gradiant descent function
+    #options that we'll pass to the minimize fucntion 
+    options = { 'maxiter' : 400} 
+    #costFunction is a reference to the function
+    # (X, y) is tuple that represent the values we'll pass to costFunction
+    # jac=True indicates that our costFunction return the gradiant of  theta along side the cost
+    # method='TNC' indicates that we'll use trucated newton algorithem which equavilant to MATLAB function fminunc which was used in the course 
+    # the function return object 'OptimizeResult'
+    res = optimize.minimize(costFunction, initial_theta , (X, y), jac=True, method='TNC', options=options )
+    # the 'fun' property returns the value of costFunction at optimize theta
+    cost = res.fun
+    # the 'x' property returns the optimize theta
+    theta = res.x
+
+    print('Cost at theta found by optimize.minimize = {:.4f}'.format(cost))
+    print('Expected cost (approx): 0.203\n');
+
+    # The '*' operator in format function is used to unpack the array_like object
+    print('Optimized theta returned by optimize.minimize =\n\t [{:.2f}, {:.2f}, {:.2f}]'.format(*theta))
+    print('Expected theta (approx):\n\t[-25.161, 0.206, 0.201]')
+
+    #Plot the decision boundary
+    utils.plot_decision_boundary(plot_data, theta, X, y)
+    plt.show()
+
+
+
+
 main()
