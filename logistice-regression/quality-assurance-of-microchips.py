@@ -1,4 +1,4 @@
-from applicant_admisson import plot_data, read_data, slope, sigmoid
+from applicant_admisson import plot_data, read_data, slope, sigmoid, predict
 from matplotlib import pyplot as plt
 import numpy as np
 import utils
@@ -95,11 +95,7 @@ def costFunctionReg(theta, X, y, lambda_):
 
 def main():
     X, y = read_data(os.path.join('data', 'ex2data2.txt'))
-    plot_data(X, y)
-    plt.xlabel('Test 1 result')
-    plt.ylabel('Test 2 result')
-    plt.legend(['y=1', 'y=0'], loc='upper right')
-    plt.show()
+
 
     #One way to fit the data better is to create more features from each data point
     # this higher-dimension feature vector will have a more complex decision boundary
@@ -152,6 +148,19 @@ def main():
 
     print('Cost at theta found by optimize.minimize = {:.4f}'.format(cost))
     print('Optimized theta returned by optimize.minimize =[{:.2f}, {:.2f}, {:.2f}]'.format(*theta))
+
+    utils.plot_decision_boundary(plot_data, theta, X, y)
+    plt.xlabel('Microship Test 1')
+    plt.ylabel('Microship Test 2')
+    plt.legend(['y=1', 'y=0'], loc='upper right')
+    plt.grid(False)
+    plt.show()
+
+    p = predict(theta, X)
+
+    #Get the summation of True(p == y) then divide it by number of training examples
+    print('Train Accuracy: %.2f %%' % (np.mean(p == y) * 100))
+    print('Expected accuracy (with lambda = 1): 83.1 % (approx)\n')
 
 
 

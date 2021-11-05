@@ -31,29 +31,36 @@ def mapFeature(X1, X2, degree=6):
         out = [np.ones(X1.shape[0])]
     else :
         out = [np.ones(1)]
-
+    no_dim = X1.ndim
     it = 0
     for i in range(1, degree + 1):
         for j in range(i + 1):
             v = (X1 ** (i - j)) * (X2 ** j)
             it = it + 1
-            if (i-j) == 0:
-                print('|| X\u2082^{}'.format(j), end=' ')
-            elif j == 0 :
-                print('|| X\u2081^{} ||'.format(i-j), end=' ')
-            else:
-                print('|| X\u2081^{}.X\u2082^{}'.format((i-j), j), end=' ')
-            
+            if no_dim > 0:
+                if (i-j) == 0:
+                    print('|| X\u2082^{}'.format(j), end=' ')
+                elif j == 0 :
+                    print('|| X\u2081^{} ||'.format(i-j), end=' ')
+                else:
+                    print('|| X\u2081^{}.X\u2082^{}'.format((i-j), j), end=' ')
+                
             out.append(v)
-        print('Appended\n')
-         
-    print('Our 2 features transformed into {}-dimensional vector'.format(i))
+        
+        if no_dim >0:
+            print('Appended\n')
+    if no_dim >0:
+        print('Our 2 features transformed into {}-dimensional vector'.format(i))
+        print('out shape =', len(out))
+        print('X1.ndim = ', X1.ndim)
        
-
+    
     if X1.ndim > 0:
+        #Create a 118 * 28 matrix
         return np.stack(out, axis=1)
     else :
-        return np.stack(out)
+        #Create a 1 * 28 vector
+        return np.array(out, dtype='float')
 
 
 def plot_decision_boundary(plot_data, theta, X, y):
@@ -106,3 +113,28 @@ def plot_decision_boundary(plot_data, theta, X, y):
         plt.legend(['Admitted', 'Not Admitted', 'Decision Boundary'])
         plt.xlim([20, 120])
         plt.ylim([20, 120])
+    else:
+        #Grid range
+        u = np.linspace(-1, 1.5, 50)
+        v = np.linspace(-1, 1.5, 50)
+        z = np.zeros((u.size, v.size))
+        #Evalute z = theta * X over the grid
+        for i, ui in enumerate(u):
+            for j, vj in enumerate(v):
+                #Create a matrix 50 * 50, each cell contains  X(1,28) * theta(28, 1) = value(1,1)
+                z[i, j] = np.dot(mapFeature(ui,vj), theta)
+        
+        #Important to transpose z before calling contour,
+        #Without transposing the plot will be flipped upside down
+        z = z.T
+        #Plot the decision 
+        plt.contour(u, v, z, levels=[0], linewidths=2, colors='g')
+        #Plot a filled contour
+        #From np.min(z) to 0 is from anywhere to the decision boundary border
+        #From 0 to np.max(z) is from decision boundary to its center
+        #As I understand :)
+        plt.contourf(u, v, z, levels=[np.min(z), 0, np.max(z)], cmap='Greens', alpha=0.4)
+        plt.legend(['Admitted', 'Not Admitted', 'Decision Boundary'])
+
+
+
