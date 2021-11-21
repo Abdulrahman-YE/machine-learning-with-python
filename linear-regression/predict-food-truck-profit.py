@@ -120,7 +120,7 @@ def plot(X, Y, T, J_history):
     axis[1].plot(range(J_history.shape[0]), J_history, 'r-')
     axis[1].set_title('Cost Change in Each Iteration')
     axis[1].set_xlabel('Iters.')
-    axis[1].set_ylabebl('Cost')
+    axis[1].set_ylabel('Cost')
 
     pyplot.show()
 
@@ -137,9 +137,10 @@ def main():
     predict2 = np.matmul([1, 7] , T)
     print("For population = 70,000, we predict a profit of {}".format(predict2 * 10000))
 
+    plot_surface_and_contour(X, Y, T)
+    pyplot.close()
     plot(X,Y, T, J_history)
 
-    plot_surface_and_contour(X, Y, T)
 
 
 
