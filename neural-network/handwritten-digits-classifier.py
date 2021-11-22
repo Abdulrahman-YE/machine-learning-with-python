@@ -1,4 +1,5 @@
 import os
+import random
 import numpy as np
 from scipy.optimize.optimize import show_options
 import utils
@@ -84,16 +85,16 @@ def lr_cost_function(theta, X, y, lambda_):
     do the following: `utils.sigmoid(z)`.
     
     """
-    print('lrCostFunction() :')
-    print('\tX-dim : ', X.shape)
-    print('\ty-dim : ', y.shape)
-    print('\ttheta-dim : ', theta.shape)
-    print('\tlambda_ : ', lambda_)
+    # print('lrCostFunction() :')
+    # print('\tX-dim : ', X.shape)
+    # print('\ty-dim : ', y.shape)
+    # print('\ttheta-dim : ', theta.shape)
+    # print('\tlambda_ : ', lambda_)
     
 
     #Initialize some useful values
     m = y.size
-    print('\tNumber of training examples : ', m)
+    # print('\tNumber of training examples : ', m)
     # convert labels to ints if their type is bool
     if y.dtype == bool:
         y = y.astype(int)
@@ -101,13 +102,13 @@ def lr_cost_function(theta, X, y, lambda_):
     # You need to return the following variables correctly
     J = 0
     grad = np.zeros(theta.shape)
-    print('\tInitial cost J : ', J)
+    # print('\tInitial cost J : ', J)
     
     
     # ====================== YOUR CODE HERE ======================
     # h(X)
     h = utils.sigmoid(X @ theta)
-    print('\th-dim : ', h.shape)
+    # print('\th-dim : ', h.shape)
     # (1 - y)
     y_minus = 1 - y
     # (1 - h(X))
@@ -120,13 +121,13 @@ def lr_cost_function(theta, X, y, lambda_):
     S = ((-1 * y) * h_log) - (y_minus * h_minus)
     S = np.sum(S)
     J = (1 / m) * S
-    print('\tUnregularized cost :', J)
+    # print('\tUnregularized cost :', J)
     ## ----Regularized-Cost
     penalized_theta = np.power(theta[1:], 2)
     penalized_theta = np.sum(penalized_theta)
     penalized_theta = (lambda_ / (2 * m)) * penalized_theta
     J = J + penalized_theta 
-    print('\tRegularized cost :', J)
+    # print('\tRegularized cost :', J)
 
     #----Gradiant----
     # h(X) - y
@@ -135,16 +136,16 @@ def lr_cost_function(theta, X, y, lambda_):
     # to get partial derivative for all thetas
     grad = X.T @ error
     grad = (1 / m) * grad
-    print('\tUnregularized gradiant(1st 5 elements) :')
-    print('\t\t', grad[:5])
+    # print('\tUnregularized gradiant(1st 5 elements) :')
+    # print('\t\t', grad[:5])
     ## ----Regularized-Gradiant
     penalized_theta = theta
     # because we don't add anything for j = 0
     penalized_theta[0] = 0 
     grad = grad + ((lambda_ / m) * penalized_theta)
-    print('\tRegularized gradiant(1st 5 elements) :')
-    print('\t\t', grad[:5])
-    print('=============================================')
+    # print('\tRegularized gradiant(1st 5 elements) :')
+    # print('\t\t', grad[:5])
+    # print('=============================================')
         
     # =============================================================
     return J, grad
@@ -230,14 +231,14 @@ def one_vs_all(X, y, num_labels, lambda_):
 
     # ====================== YOUR CODE HERE ======================
     # Set options for minimize
-    options = {'maxiter' : 50, 'disp' : True}
+    options = {'maxiter' : 50, 'disp' : False}
 
     for c in range(num_labels):
         inital_theta = np.zeros(n + 1)
         # Run minimize to obtain the optimal theta. This function will 
         # return a class object where theta is in `res.x` and cost in `res.fun`
         res = optimize.minimize(lr_cost_function, inital_theta, (X, (y == c), lambda_), jac=True, method='TNC', options=options )
-        print('Cost of classifying ' + c + ' digit : ' + res.fun)
+        print('Cost of classifying ' + str(c) + ' digit : ' + str(res.fun))
         inital_theta = res.x
         all_theta[c] = inital_theta
 
@@ -247,6 +248,73 @@ def one_vs_all(X, y, num_labels, lambda_):
 
 
 
+
+def predict_one_vs_all(all_theta, X, y):
+    """
+    Return a vector of predictions for each example in the matrix X. 
+    Note that X contains the examples in rows. all_theta is a matrix where
+    the i-th row is a trained logistic regression theta vector for the 
+    i-th class. You should set p to a vector of values from 0..K-1 
+    (e.g., p = [0, 2, 0, 1] predicts classes 0, 2, 0, 1 for 4 examples) .
+    
+    Parameters
+    ----------
+    all_theta : array_like
+        The trained parameters for logistic regression for each class.
+        This is a matrix of shape (K x n+1) where K is number of classes
+        and n is number of features without the bias.
+    
+    X : array_like
+        Data points to predict their labels. This is a matrix of shape 
+        (m x n) where m is number of data points to predict, and n is number 
+        of features without the bias term. Note we add the bias term for X in 
+        this function. 
+    
+    Returns
+    -------
+    p : array_like
+        The predictions for each data point in X. This is a vector of shape (m, ).
+    
+    Instructions
+    ------------
+    Complete the following code to make predictions using your learned logistic
+    regression parameters (one-vs-all). You should set p to a vector of predictions
+    (from 0 to num_labels-1).
+    
+    Hint
+    ----
+    This code can be done all vectorized using the numpy argmax function.
+    In particular, the argmax function returns the index of the max element,
+    for more information see '?np.argmax' or search online. If your examples
+    are in rows, then, you can use np.argmax(A, axis=1) to obtain the index 
+    of the max for each row.
+    """
+    print('Predict One vs All : ')
+    m = X.shape[0];
+    random_index = random.randint(0, m )
+
+    num_labels = all_theta.shape[0]
+    print('\tNumber of labels : ', num_labels)
+    # You need to return the following variables correctly 
+    p = np.zeros(m)
+
+    # Add ones to the X data matrix
+    X = np.concatenate([np.ones((m, 1)), X], axis=1)
+
+    # ====================== YOUR CODE HERE ======================
+    pred = X @ all_theta.T
+    print('\tpred-dim : ' , pred.shape)
+    print('\tThis matrix contains the prediction for each data point to each label')
+    print('\tValue of pred[random_index] : ')
+    print('\t', pred[random_index])
+    p = np.argmax(pred, axis=1)
+    print('\tValue of predicted label at random_index : ', p[random_index])
+    print('\tValue of original label at random_index : ', y[random_index])
+
+
+    print('======================')
+    # ============================================================
+    return p
 
 def test_cost_function():
     #Test values for the parameters theta
@@ -315,6 +383,11 @@ def main():
     #1.2 Victorizing Logistic Regression
     test_cost_function()
     #1.4 One-vs-All Classification
+    lambda_ = 0.1
+    all_theta = one_vs_all(X, y, num_labels, lambda_)
+    #1.4.1 One-vs-All Classification
+    pred = predict_one_vs_all(all_theta, X, y)
+    print('Training set Accuracy : {:.2f}%'.format(np.mean(pred == y) * 100))
 
 
 if __name__ == "__main__":
