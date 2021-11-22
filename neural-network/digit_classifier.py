@@ -232,7 +232,7 @@ def one_vs_all(X, y, num_labels, lambda_):
 
 
 
-def predict_one_vs_all(all_theta, X, y):
+def predict_one_vs_all(all_theta, X):
     """
     Return a vector of predictions for each example in the matrix X. 
     Note that X contains the examples in rows. all_theta is a matrix where
@@ -274,7 +274,7 @@ def predict_one_vs_all(all_theta, X, y):
     """
     print('Predict One vs All : ')
     m = X.shape[0];
-    random_index = random.randint(0, m )
+    #random_index = random.randint(0, m )
 
     num_labels = all_theta.shape[0]
     print('\tNumber of labels : ', num_labels)
@@ -286,13 +286,13 @@ def predict_one_vs_all(all_theta, X, y):
 
     # ====================== YOUR CODE HERE ======================
     pred = X @ all_theta.T
-    print('\tpred-dim : ' , pred.shape)
-    print('\tThis matrix contains the prediction for each data point to each label')
-    print('\tValue of pred[random_index] : ')
-    print('\t', pred[random_index])
+    # print('\tpred-dim : ' , pred.shape)
+    # print('\tThis matrix contains the prediction for each data point to each label')
+    # print('\tValue of pred[random_index] : ')
+    # print('\t', pred[random_index])
     p = np.argmax(pred, axis=1)
-    print('\tValue of predicted label at random_index : ', p[random_index])
-    print('\tValue of original label at random_index : ', y[random_index])
+    #print('\tValue of predicted label at random_index : ', p[random_index])
+    #print('\tValue of original label at random_index : ', y[random_index])
 
 
     print('======================')
@@ -371,7 +371,7 @@ def main():
     #1.4.1 One-vs-All Classification
     pred = predict_one_vs_all(all_theta, X, y)
     print('Training set Accuracy : {:.2f}%'.format(np.mean(pred == y) * 100))
-
+    np.savetxt('optimit_thetas.csv', all_theta, delimiter=',')
 
 if __name__ == "__main__":
     main()
