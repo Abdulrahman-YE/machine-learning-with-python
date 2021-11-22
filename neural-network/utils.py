@@ -31,7 +31,7 @@ def display_data(X, example_width=None, fig_size=(10, 10)):
     display_cols = int(np.ceil(m / display_rows))
     print('display_cols : {}'.format(display_cols))
 
-    fig, ax_array = plt.subplots(display_rows, display_cols, fig_size)
+    fig, ax_array = plt.subplots(nrows=display_rows, ncols=display_cols, figsize=fig_size)
     #Add margin between imgs
     fig.subplots_adjust(wspace=0.025, hspace=0.025)
 
@@ -40,6 +40,10 @@ def display_data(X, example_width=None, fig_size=(10, 10)):
     for i, ax in enumerate(ax_array):
         ax.imshow(X[i].reshape(example_width, example_width, order='F'), cmap='Greys', extent=[0, 1, 0, 1])
         ax.axis('off')
+
+    plt.show()
+    print('=============================================')
+
 
 
 
