@@ -196,24 +196,7 @@ def one_vs_all(X, y, num_labels, lambda_):
     For this assignment, we recommend using `scipy.optimize.minimize(method='CG')`
     to optimize the cost function. It is okay to use a for-loop 
     (`for c in range(num_labels):`) to loop over the different classes.
-    
-    Example Code
-    ------------
-    
-        # Set Initial theta
-        initial_theta = np.zeros(n + 1)
-      
-        # Set options for minimize
-        options = {'maxiter': 50}
-    
-        # Run minimize to obtain the optimal theta. This function will 
-        # return a class object where theta is in `res.x` and cost in `res.fun`
-        res = optimize.minimize(lrCostFunction, 
-                                initial_theta, 
-                                (X, (y == c), lambda_), 
-                                jac=True, 
-                                method='TNC',
-                                options=options) 
+     
     """
     print('One vs All Classification : ')
     # Some useful variables
