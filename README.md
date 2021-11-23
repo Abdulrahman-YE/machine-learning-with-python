@@ -1,5 +1,5 @@
 # machine-learning-with-python
-- This is my own solutions of the exercises part of Prof.Andrew NG course in Machine Learning. I followed the python version of the exercises writen by @ Thanks to his effort the exercises has been easier to solve instead of the MATLAB version.
+- This is my own solutions of the exercises part of Prof.Andrew NG course in Machine Learning. I followed the python version of the exercises writen by @dibgerge Thanks to his effort the exercises has been easier to solve instead of the MATLAB version.
 ### Exercises:
 #### 1 - Linear regression 
 - One variable linear regression : Predict the profit of a food truck based on populatios.
