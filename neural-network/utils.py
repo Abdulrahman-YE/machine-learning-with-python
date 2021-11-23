@@ -1,7 +1,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 
-def display_data(X, example_width=None, fig_size=(10, 10)):
+def display_data(X, example_width=None, fig_size=(10, 10), debug=False):
     """
     Displays 2D data stored in X in a nice grid
     """
@@ -15,21 +15,14 @@ def display_data(X, example_width=None, fig_size=(10, 10)):
     else:
         raise IndexError('Input X should be 1 or 2 dimensional.')
     
-    print('Display Data : ')
-    print('Number of training examples m : {}'.format(m))
-    print('Number of Features n : {}'.format(n))
 
     #Convert 400 to 20 width* 20 height pixel img 
     example_width = example_width or int(np.round(np.sqrt(n)))
-    print('example_width : {}'.format(example_width))
     example_height = n / example_width
-    print('example_height : {}'.format(example_height))
 
     #Compute number of items to display
     display_rows = int(np.floor(np.sqrt(m)))
-    print('display_rows : {}'.format(display_rows))
     display_cols = int(np.ceil(m / display_rows))
-    print('display_cols : {}'.format(display_cols))
 
     fig, ax_array = plt.subplots(nrows=display_rows, ncols=display_cols, figsize=fig_size)
     #Add margin between imgs
@@ -41,8 +34,19 @@ def display_data(X, example_width=None, fig_size=(10, 10)):
         ax.imshow(X[i].reshape(example_width, example_width, order='F'), cmap='Greys', extent=[0, 1, 0, 1])
         ax.axis('off')
 
+    if debug:
+        print('Display Data : ')
+        print('\tNumber of training examples m : {}'.format(m))
+        print('\tNumber of Features n : {}'.format(n))
+        print('\texample_width : {}'.format(example_width))
+        print('\texample_height : {}'.format(example_height))
+        print('\tdisplay_rows : {}'.format(display_rows))
+        print('\tdisplay_cols : {}'.format(display_cols))
+        print('=============================================')
+
+        
+
     plt.show()
-    print('=============================================')
 
 
 
