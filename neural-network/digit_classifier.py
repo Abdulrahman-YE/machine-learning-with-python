@@ -1,7 +1,6 @@
 import os
 import random
 import numpy as np
-from scipy.optimize.optimize import show_options
 import utils
 from matplotlib import pyplot as plt
 from scipy import io
@@ -20,7 +19,7 @@ def visualize_data(X):
 
     utils.display_data(selected_data)
 
-def lr_cost_function(theta, X, y, lambda_):
+def lr_cost_function(theta, X, y, lambda_, debug=False):
     """
     Computes the cost of using theta as the parameter for regularized
     logistic regression and the gradient of the cost w.r.t. to the parameters.
@@ -85,12 +84,13 @@ def lr_cost_function(theta, X, y, lambda_):
     do the following: `utils.sigmoid(z)`.
     
     """
-    # print('lrCostFunction() :')
-    # print('\tX-dim : ', X.shape)
-    # print('\ty-dim : ', y.shape)
-    # print('\ttheta-dim : ', theta.shape)
-    # print('\tlambda_ : ', lambda_)
-    
+    if debug:
+        print('lrCostFunction() :')
+        print('\tX-dim : ', X.shape)
+        print('\ty-dim : ', y.shape)
+        print('\ttheta-dim : ', theta.shape)
+        print('\tlambda_ : ', lambda_)
+        
 
     #Initialize some useful values
     m = y.size
@@ -101,14 +101,11 @@ def lr_cost_function(theta, X, y, lambda_):
     
     # You need to return the following variables correctly
     J = 0
-    grad = np.zeros(theta.shape)
-    # print('\tInitial cost J : ', J)
-    
+    grad = np.zeros(theta.shape)    
     
     # ====================== YOUR CODE HERE ======================
     # h(X)
     h = utils.sigmoid(X @ theta)
-    # print('\th-dim : ', h.shape)
     # (1 - y)
     y_minus = 1 - y
     # (1 - h(X))
@@ -121,14 +118,13 @@ def lr_cost_function(theta, X, y, lambda_):
     S = ((-1 * y) * h_log) - (y_minus * h_minus)
     S = np.sum(S)
     J = (1 / m) * S
-    # print('\tUnregularized cost :', J)
+    if debug: 
+        print('\tUnregularized cost :', J)
     ## ----Regularized-Cost
     penalized_theta = np.power(theta[1:], 2)
     penalized_theta = np.sum(penalized_theta)
     penalized_theta = (lambda_ / (2 * m)) * penalized_theta
     J = J + penalized_theta 
-    # print('\tRegularized cost :', J)
-
     #----Gradiant----
     # h(X) - y
     error = h - y
@@ -136,22 +132,25 @@ def lr_cost_function(theta, X, y, lambda_):
     # to get partial derivative for all thetas
     grad = X.T @ error
     grad = (1 / m) * grad
-    # print('\tUnregularized gradiant(1st 5 elements) :')
-    # print('\t\t', grad[:5])
+    if debug:
+        print('\tUnregularized gradiant(1st 5 elements) :')
+        print('\t', grad[:5])
     ## ----Regularized-Gradiant
     penalized_theta = theta
     # because we don't add anything for j = 0
     penalized_theta[0] = 0 
     grad = grad + ((lambda_ / m) * penalized_theta)
-    # print('\tRegularized gradiant(1st 5 elements) :')
-    # print('\t\t', grad[:5])
-    # print('=============================================')
-        
+    
+    if debug:
+        print('\tRegularized cost :', J)
+        print('\tRegularized gradiant(1st 5 elements) :')
+        print('\t\t', grad[:5])
+        print('=============================================')
     # =============================================================
     return J, grad
 
 
-def one_vs_all(X, y, num_labels, lambda_):
+def one_vs_all(X, y, num_labels, lambda_, debug=False):
     """
     Trains num_labels logistic regression classifiers and returns
     each of these classifiers in a matrix all_theta, where the i-th
@@ -198,41 +197,44 @@ def one_vs_all(X, y, num_labels, lambda_):
     (`for c in range(num_labels):`) to loop over the different classes.
      
     """
-    print('One vs All Classification : ')
     # Some useful variables
     m, n = X.shape
-    print('\tNumber of training examples m : ', m)
-    print('\tNumber of training examples n : ', n)
 
     # You need to return the following variables correctly 
     all_theta = np.zeros((num_labels, n + 1))
-    print('\tall_theta-dim : ', all_theta.shape)
-    print('\tEach row in all_theta represents one classifier parameters (theta)')
 
     # Add ones to the X data matrix
     X = np.concatenate([np.ones((m, 1)), X], axis=1)
 
     # ====================== YOUR CODE HERE ======================
     # Set options for minimize
-    options = {'maxiter' : 50, 'disp' : False}
+    options = {'maxiter' : 50, 'disp' : debug}
 
     for c in range(num_labels):
         inital_theta = np.zeros(n + 1)
         # Run minimize to obtain the optimal theta. This function will 
         # return a class object where theta is in `res.x` and cost in `res.fun`
-        res = optimize.minimize(lr_cost_function, inital_theta, (X, (y == c), lambda_), jac=True, method='TNC', options=options )
-        print('Cost of classifying ' + str(c) + ' digit : ' + str(res.fun))
+        res = optimize.minimize(lr_cost_function, inital_theta, (X, (y == c), lambda_, debug), jac=True, method='TNC', options=options )
+        if debug:
+            print('Cost of classifying ' + str(c) + ' digit : ' + str(res.fun))
         inital_theta = res.x
         all_theta[c] = inital_theta
 
     # ============================================================
-    print('==========================')
+    #Masseges for debug purpose
+    if debug:
+        print('One vs All Classification : ')
+        print('\tNumber of training examples m : ', m)
+        print('\tNumber of training examples n : ', n)
+        print('\tall_theta-dim : ', all_theta.shape)
+        print('\tEach row in all_theta represents one classifier parameters (theta)')
+        print('==========================')
     return all_theta
 
 
 
 
-def predict_one_vs_all(all_theta, X):
+def predict_one_vs_all(all_theta, X, debug=False):
     """
     Return a vector of predictions for each example in the matrix X. 
     Note that X contains the examples in rows. all_theta is a matrix where
@@ -272,12 +274,10 @@ def predict_one_vs_all(all_theta, X):
     are in rows, then, you can use np.argmax(A, axis=1) to obtain the index 
     of the max for each row.
     """
-    print('Predict One vs All : ')
-    m = X.shape[0];
-    #random_index = random.randint(0, m )
+    m = X.shape[0]
+    random_index = random.randint(0, m )
 
     num_labels = all_theta.shape[0]
-    print('\tNumber of labels : ', num_labels)
     # You need to return the following variables correctly 
     p = np.zeros(m)
 
@@ -286,16 +286,17 @@ def predict_one_vs_all(all_theta, X):
 
     # ====================== YOUR CODE HERE ======================
     pred = X @ all_theta.T
-    # print('\tpred-dim : ' , pred.shape)
-    # print('\tThis matrix contains the prediction for each data point to each label')
-    # print('\tValue of pred[random_index] : ')
-    # print('\t', pred[random_index])
+   
     p = np.argmax(pred, axis=1)
-    #print('\tValue of predicted label at random_index : ', p[random_index])
-    #print('\tValue of original label at random_index : ', y[random_index])
-
-
-    print('======================')
+    if debug:
+        print('Predict One vs All : ')
+        print('\tNumber of labels : ', num_labels)
+        print('\tpred-dim : ' , pred.shape)
+        print('\tThis matrix contains the prediction for each data point to each label')
+        print('\tValue of pred[random_index] : ')
+        print('\t', pred[random_index])
+        print('\tValue of predicted label at random_index : ', p[random_index])
+        print('======================')
     # ============================================================
     return p
 
@@ -323,6 +324,7 @@ def test_cost_function():
 
 
 def main():
+    debug = False
     # 20x20 Imput images of digits
     input_layer_size = 400
 
@@ -341,21 +343,26 @@ def main():
     # The second part of the training set is a 5000-dimensional vector
     # y that conatins labels for the training set
     data = io.loadmat(os.path.join('data', 'ex3data1'))
-    print('The keys of the ex3data1.mat ', data.keys())
+    
     X = np.array(data['X'])
-    print('X-dimensions : ', X.shape)
-    y = np.array(data['y'].ravel())
     # Without using ravel() the shape is : (5000, 1)
     # so ravel() used to change 2-dim or mutli-dim array into a contigous flattend array
-    print('y-dimensions : ', y.shape)
-    print('y-labels : ')
-    print(np.unique(y))
+    y = np.array(data['y'].ravel())
+    
+    if debug:
+        print('The keys of the ex3data1.mat ', data.keys())
+        print('X-dimensions : ', X.shape)
+        print('y-dimensions : ', y.shape)
+        print('y-labels : ')
+        print(np.unique(y))
+
     # The zero digit is labeled as 10 in the original data file
     # because the data was used in MATLAB where there is no index 0
     # Change the zero digit label to 0
     y[y == 10] = 0
-    print('y-labels after mapping zero digit to label 0 : ')
-    print(np.unique(y))
+    if debug:
+        print('y-labels after mapping zero digit to label 0 : ')
+        print(np.unique(y))
 
     #The number of training examples
     m = y.size
@@ -367,9 +374,9 @@ def main():
     test_cost_function()
     #1.4 One-vs-All Classification
     lambda_ = 0.1
-    all_theta = one_vs_all(X, y, num_labels, lambda_)
+    all_theta = one_vs_all(X, y, num_labels, lambda_, debug)
     #1.4.1 One-vs-All Classification
-    pred = predict_one_vs_all(all_theta, X, y)
+    pred = predict_one_vs_all(all_theta, X, y, debug)
     print('Training set Accuracy : {:.2f}%'.format(np.mean(pred == y) * 100))
     np.savetxt('optimit_thetas.csv', all_theta, delimiter=',')
 
