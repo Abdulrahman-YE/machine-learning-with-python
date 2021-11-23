@@ -125,7 +125,7 @@ def slope(theta, X):
     z = -1 * z
     return z
 
-def costFunction(theta, X, y):
+def cost_function(theta, X, y):
     """
     Compute cost and gradient for logistic regression. 
     
@@ -238,7 +238,7 @@ def main():
     # Initialize fitting parameters
     initial_theta = np.zeros(X.shape[1])
 
-    cost, grad = costFunction(initial_theta, X, y)
+    cost, grad = cost_function(initial_theta, X, y)
 
     print('Cost at initial theta (zeros): {:.3f}'.format(cost))
     print('Expected cost (approx): 0.693\n')
@@ -249,7 +249,7 @@ def main():
 
     # Compute and display cost and gradient with non-zero theta
     test_theta = np.array([-24, 0.2, 0.2])
-    cost, grad = costFunction(test_theta, X, y)
+    cost, grad = cost_function(test_theta, X, y)
 
     print('Cost at test theta: {:.3f}'.format(cost))
     print('Expected cost (approx): 0.218\n')
@@ -268,7 +268,7 @@ def main():
     # jac=True indicates that our costFunction return the gradiant of  theta along side the cost
     # method='TNC' indicates that we'll use trucated newton algorithem which equavilant to MATLAB function fminunc which was used in the course 
     # the function return object 'OptimizeResult'
-    res = optimize.minimize(costFunction, initial_theta , (X, y), jac=True, method='TNC', options=options )
+    res = optimize.minimize(cost_function, initial_theta , (X, y), jac=True, method='TNC', options=options )
     # the 'fun' property returns the value of costFunction at optimize theta
     cost = res.fun
     # the 'x' property returns the optimize theta

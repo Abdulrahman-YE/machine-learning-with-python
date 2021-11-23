@@ -2,7 +2,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 import sys
 
-def mapFeature(X1, X2, degree=6):
+def map_feature(X1, X2, degree=6):
     """
     Maps the two input features to quadratic features used in the regularization exercise.
 
@@ -122,7 +122,7 @@ def plot_decision_boundary(plot_data, theta, X, y):
         for i, ui in enumerate(u):
             for j, vj in enumerate(v):
                 #Create a matrix 50 * 50, each cell contains  X(1,28) * theta(28, 1) = value(1,1)
-                z[i, j] = np.dot(mapFeature(ui,vj), theta)
+                z[i, j] = np.dot(map_feature(ui,vj), theta)
         
         #Important to transpose z before calling contour,
         #Without transposing the plot will be flipped upside down

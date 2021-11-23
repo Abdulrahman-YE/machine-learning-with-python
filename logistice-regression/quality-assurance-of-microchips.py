@@ -10,7 +10,7 @@ from scipy import optimize
 #In this script we will implement we'll implement regularized logistic regression to predict whether microchips from a fabrication plant passes quality assurance (QA). 
 #During QA, each microchip goes through various tests to ensure it is functioning correctly.
 
-def costFunctionReg(theta, X, y, lambda_):
+def cost_function_reg(theta, X, y, lambda_):
     """
     Compute cost and gradient for logistic regression with regularization.
     
@@ -102,7 +102,7 @@ def main():
     # and will appear nonlinear when drawn in our 2-dimensional plot.it also more susceptible to overfitting
     # regularization can help combat the overfitting problem.
     # This fucntion also adds a column of ones in the begining , so the intercept term with theta0 is handled
-    X = utils.mapFeature(X[:, 0], X[:, 1])
+    X = utils.map_feature(X[:, 0], X[:, 1])
 
     # Initialize fitting parameters
     initial_theta = np.zeros(X.shape[1])
@@ -114,7 +114,7 @@ def main():
 
     # Compute and display initial cost and gradient for regularized logistic
     # regression
-    cost, grad = costFunctionReg(initial_theta, X, y, lambda_)
+    cost, grad = cost_function_reg(initial_theta, X, y, lambda_)
 
     print('Cost at initial theta (zeros): {:.3f}'.format(cost))
     print('Expected cost (approx)       : 0.693\n')
@@ -128,7 +128,7 @@ def main():
     # Compute and display cost and gradient
     # with all-ones theta and lambda = 10
     test_theta = np.ones(X.shape[1])
-    cost, grad = costFunctionReg(test_theta, X, y, 10)
+    cost, grad = cost_function_reg(test_theta, X, y, 10)
 
     print('------------------------------\n')
     print('Cost at test theta    : {:.2f}'.format(cost))
@@ -142,7 +142,7 @@ def main():
     #OPTIMIZE
     #============================================================
     options = { 'maxiter' : 400} 
-    res = optimize.minimize(costFunctionReg, initial_theta , (X, y, lambda_), jac=True, method='TNC', options=options )
+    res = optimize.minimize(cost_function_reg, initial_theta , (X, y, lambda_), jac=True, method='TNC', options=options )
     cost = res.fun
     theta = res.x
 
